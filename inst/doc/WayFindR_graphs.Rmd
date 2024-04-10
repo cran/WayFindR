@@ -1,0 +1,188 @@
+---
+author: "Polina Bombina and Kevin R. Coombes"
+title: 'WayFindR: Computing Graph Metrics on WikiPathways'
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{WayFindR: Computing Graph Metrics on WikiPathways}
+  %\VignetteKeywords{pathways, graphs, cycles}
+  %\VignetteDepends{WayFindR,igraph,XML}
+  %\VignettePackage{WayFindR}
+  %\VignetteEngine{knitr::rmarkdown}output: output:
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction 
+Graph metrics are quantitative measures that provide insights into the structural
+properties of pathway graphs, playing a crucial role in understanding the topology
+of biological networks and revealing key characteristics. Through the integration 
+of WikiPathways and R's `igraph` package, `WayFindR` provides a suite of functions
+that enables researchers to compute graph metrics on biological pathways. In this
+vignette, we demonstrate how to compute some of these metrics on the pathway named
+"Factors and pathways influencing insulin-like growth factor (IGF1)-Akt signaling
+(WP3850)" accessible at https://www.wikipathways.org/pathways/WP3850.html. This 
+GPML file is included in the package as a system file.
+
+# Data Preparation
+First, we load the required libraries:
+```{r packs}
+library(WayFindR)
+suppressMessages( library(igraph) )
+```
+
+Now we are ready to load our GPML file and convert it into an igraph object:
+```{r graph}
+xmlfile <- system.file("pathways/WP3850.gpml", package = "WayFindR")
+G <- GPMLtoIgraph(xmlfile)
+class(G)
+```
+
+# Computing graph metrics
+After obtaining an `igraph` object, we can use functions from the `igraph`
+package to compute its structural properties.
+
+Users have the flexibility to choose which metrics to calculate for their 
+research purposes. However, for the exploration of cycles in graphs, we will
+concentrate on a selection of global metrics that are potentially intriguing:
+
+1. Number of vertices
+2. Number of edges
+3. Number of negative interactions (inhibition processes or edges)
+4. Presence/absence of loops
+5. Presence/absence of multiple edges
+6. Presence/absence of Eulerian path or cycle in the input graph
+7. Number of clusters
+8. Density
+9. Radius of the graph
+10. Diameter of the graph
+11. Girth
+12. Global efficiency of the graph
+13. Average path length in the graph
+14. Number of cliques
+15. Reciprocity
+
+
+We refer readers to the `igraph` package tutorial for more detailed explanations
+of these metrics.
+
+Next, let's create a table summarizing all the metrics of interest.
+```{r calcmetrics}
+# Calculate metrics
+metrics <- data.frame(nVertices = length(V(G)),
+                   nEdges = length(E(G)),
+                   nNegative = sum(edge_attr(G, "MIM") == "mim-inhibition"),
+                   hasLoop = any_loop(G),
+                   hasMultiple = any_multiple(G),
+                   hasEuler = has_eulerian_cycle(G) | has_eulerian_path(G),
+                   nComponents = count_components(G),
+                   density = edge_density(G),
+                   diameter = diameter(G),
+                   radius = radius(G),
+                   girth = ifelse(is.null(girth(G)), NA, girth(G)$girth),
+                   nTriangles = sum(count_triangles(G)),
+                   efficiency = global_efficiency(G),
+                   meanDistance = mean_distance(G),
+                   cliques = clique_num(G),
+                   reciprocity = reciprocity(G))
+metrics
+```
+
+We can find cycles and analyze cycle subgraph (i.e., the subgraph defined by
+including only the nodes that re presen tin at least one cycle.
+Here, `nCyVert` is the number of vertices in the cycle subgraph,
+`nCyEdge` is the number of edges in the cycle subgraph,
+`nCyNeg` is the number of edges in the cycle subgraph  with the attribute "MIM"
+equal to "mim-inhibition". You can visually confirm the cunts in the
+plot below.
+
+```{r cyclesub}
+cy <- findCycles(G)
+length(cy)
+S <- cycleSubgraph(G, cy)
+cymetrics <- data.frame(nCycles = length(cy),
+                         nCyVert = length(V(S)),
+                         nCyEdge = length(E(S)),
+                         nCyNeg = sum(edge_attr(S, "MIM") == "mim-inhibition"))
+cymetrics
+```
+
+```{r fig.width=8, fig.height=8}
+set.seed(93217)
+plot(S)
+nodeLegend("topleft", S)
+edgeLegend("bottomright", S)
+
+```
+
+# Degrees a
+nd Hubs
+In addition to numerous "global" graph metrics, the `igraph` package includes
+tools to compute numerous "local" metrics, which describe the properties of
+individual nodes or edges. In many networks (which, like pathways, can be
+represented by mathematical graphs), highly connected nodes are often viewed as
+"hubs" that play a more important role. The simplest such metric is the "degree",
+which counts the number of edges connected to the node. (In directed graphs, which
+we use to instantiate pathway, one can talk about both inbound and outbound edges
+and degrees.)
+
+Here we compute the total degree of each edge
+```{r degree}
+deg <- degree(G)
+summary(deg)
+tail(sort(deg))
+```
+We see that the largest degree is equal to 12. To find our which node that
+is, we peek into the graph.
+```{r maxdeg}
+w <- which(deg == 12)
+V(G)[w]$label
+```
+So, the highest degree belongs to the group representing the mTORC1 complex. We
+know that the in-degree for this graph node is artificially inflated by the
+"contained" arrows defining the group members. So, it may be worth exploring how
+many such arrows there are, and how many are actual interactions.
+
+Here are the genes that are the source of inbound arrows.
+```{r splore}
+A <- adjacent_vertices(G, w, "in")
+A
+```
+By default, we only see the cryptic alphanumeric identifiers. By extracting
+the IDs, we can find the gene names.
+```{r in-genes}
+ids <- as_ids(A[[1]])
+V(G)$label[as_ids(V(G)) %in% ids]
+```
+Knowing the IDs, we can also determine the edge type. 
+```{r edgeTypes}
+Earg <- as.vector(t(as.matrix(data.frame(Source = ids, Target = names(w)))))
+E(G, P = Earg)$MIM
+```
+
+Now we can plot the subgraph that connects directly to the mTORC1 complex. 
+```{r fig.width=7, fig.height=7, fig.cap="Immediate portion of the pathway aronud the mTORC1 complex."}
+B <- adjacent_vertices(G, w, "out")
+subg <- subgraph(G, c(names(w), ids, as_ids(B[[1]])))
+plot(subg, lwd=3)
+```
+We see that five of the inbound arrows are for the genes that are "contained" 
+in the complex, leaving seven arrows rhat have biological meaning for the pathway.
+
+
+We saw above that there is another node in this pathway that has 7 connected
+edges. It may be worth looking more closely at that node.
+```{r seven}
+w <- which(deg == 7)
+V(G)[w]$label
+```
+This time, we get an actual gene, `FoxO`.
+```{r fig.width=7, fig.height=7, fig.cap="Immeduiate portion of the pathway around `FoxO."}
+B <- adjacent_vertices(G, w, "all")
+subg <- subgraph(G, c(names(w), as_ids(B[[1]])))
+plot(subg, lwd=3)
+```
