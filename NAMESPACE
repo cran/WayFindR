@@ -5,23 +5,40 @@
 importFrom("XML",
            "getNodeSet", "xmlGetAttr", "xmlNamespace",
            "xmlParseDoc", "xmlRoot", "xmlParent")
-importFrom("igraph", "E", "V", "all_simple_paths",
+importFrom("igraph",
+           "E", "V", "all_simple_paths",
            "get.edge.ids", "graph_from_data_frame",
-           "neighbors", "subgraph", "set_graph_attr")
-importFrom("graphics", "legend")
+           "neighbors", "subgraph", "set_graph_attr",
+           "as_graphnel", "as_ids", "edge_attr",
+           "graph_attr", "vertex_attr")
+importFrom("graphics", "legend", "polygon")
 importFrom("utils", "head")
+importFrom("PubChemR", "get_cids", "get_properties",
+           "CIDs", "retrieve")                       # Annotate KEGG compounds
+importFrom("KEGGREST", "keggGet", "keggList")        # Annotate KEGG glycans
+importFrom("AnnotationDbi", "select")                # Annotate KEGG genes
+importFrom("org.Hs.eg.db", "org.Hs.eg.db")           # Annotate KEGG genes
+importFrom("DescTools", "DrawEllipse")
+importFrom("Rgraphviz", "agopen", "edgeNames")
+
 
 #exportMethods("plot")
 
 ## Functions that perform steps in the process to build the final
-## igraph object.
+## igraph object from WikiPAthways GPML files.
 export("collectEdges", "collectNodes", "collectGroups",
        "collectAnchors", "collectLabels", "collectShapes")
+
+## Functions that perform steps in the process to build the final
+## igraph object from KEGG KGML files.
+export("collectEntries", "collectRelations", "collectReactions")
 
 ## graph and cycle functions
 export("GPMLtoIgraph", "nodeLegend", "edgeLegend")
 export("findCycles", "interpretCycle", "cycleSubgraph")
 
+export("as.graphNEL")
+export("KGMLtoIgraph")
 ## objects for primary plotting routines
 #exportClasses("Cycle")
 

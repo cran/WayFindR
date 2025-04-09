@@ -40,7 +40,7 @@ cymetrics <- data.frame(nCycles = length(cy),
                          nCyNeg = sum(edge_attr(S, "MIM") == "mim-inhibition"))
 cymetrics
 
-## ----fig.width=8, fig.height=8------------------------------------------------
+## ----fig.width=8, fig.height=8, fig.cap = "Figure 1: Example pathway (WP3850) from WikiPathways."----
 set.seed(93217)
 plot(S)
 nodeLegend("topleft", S)
@@ -68,7 +68,7 @@ V(G)$label[as_ids(V(G)) %in% ids]
 Earg <- as.vector(t(as.matrix(data.frame(Source = ids, Target = names(w)))))
 E(G, P = Earg)$MIM
 
-## ----fig.width=7, fig.height=7, fig.cap="Immediate portion of the pathway aronud the mTORC1 complex."----
+## ----fig.width=7, fig.height=7, fig.cap="Figure 2: Immediate portion of the pathway aronud the mTORC1 complex."----
 B <- adjacent_vertices(G, w, "out")
 subg <- subgraph(G, c(names(w), ids, as_ids(B[[1]])))
 plot(subg, lwd=3)
@@ -77,7 +77,7 @@ plot(subg, lwd=3)
 w <- which(deg == 7)
 V(G)[w]$label
 
-## ----fig.width=7, fig.height=7, fig.cap="Immeduiate portion of the pathway around `FoxO."----
+## ----fig.width=7, fig.height=7, fig.cap="Figure 3: Immediate portion of the pathway around `FoxO."----
 B <- adjacent_vertices(G, w, "all")
 subg <- subgraph(G, c(names(w), as_ids(B[[1]])))
 plot(subg, lwd=3)

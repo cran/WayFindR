@@ -25,7 +25,7 @@ collectShapes(xmldoc)
   \item{xmldoc}{Either the name of an XML file meeting the
     specifications of the Genomic Pathway Markup Language (GPML), or an
     object of class \code{XMLInternalDocument} obtained by running such
-    a file through the \code{\link{xmlParseDoc}} function of the \code{XML}
+    a file through the \code{\link[XML]{xmlParseDoc}} function of the \code{XML}
     package. (All of the functions described here will call
     \code{xmlParseDoc} if it hasn't already been used.)}
   \item{allnodes}{A data frame containing node information, in the format
@@ -79,7 +79,7 @@ collectShapes(xmldoc)
   alphanumeric identifiers of items decribing nodes. The \code{MIM}
   column is the edge type in GPML, which often contains terminology based
   on the "Molecular Interaction Map" standard. When creating an
-  \code{\link{igraph}} object from a pathway, the first two columns are
+  \code{\link[igraph]{igraph}} object from a pathway, the first two columns are
   used as identifiers to define the nodes at each end of the edge.
 
   The \code{collectNodes} function returns a data frame with three
