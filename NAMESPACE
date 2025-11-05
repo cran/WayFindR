@@ -6,16 +6,14 @@ importFrom("XML",
            "getNodeSet", "xmlGetAttr", "xmlNamespace",
            "xmlParseDoc", "xmlRoot", "xmlParent")
 importFrom("igraph",
-           "E", "V", "all_simple_paths", "random_walk",
+           "E", "V", "all_simple_paths",
            "get.edge.ids", "graph_from_data_frame",
            "neighbors", "subgraph", "set_graph_attr",
            "as_graphnel", "as_ids", "edge_attr",
            "graph_attr", "vertex_attr")
+importFrom("KEGGREST", "keggGet",  "keggList")
 importFrom("graphics", "legend", "polygon")
 importFrom("utils", "head")
-importFrom("PubChemR", "get_cids", "get_properties",
-           "CIDs", "retrieve")                       # Annotate KEGG compounds
-importFrom("KEGGREST", "keggGet", "keggList")        # Annotate KEGG glycans
 importFrom("AnnotationDbi", "select")                # Annotate KEGG genes
 importFrom("org.Hs.eg.db", "org.Hs.eg.db")           # Annotate KEGG genes
 importFrom("DescTools", "DrawEllipse")
@@ -35,8 +33,7 @@ export("collectEntries", "collectRelations", "collectReactions")
 
 ## graph and cycle functions
 export("GPMLtoIgraph", "nodeLegend", "edgeLegend")
-export("findCycles", "discoverCycles",
-       "interpretCycle", "cycleSubgraph")
+export("findCycles", "interpretCycle", "cycleSubgraph")
 
 export("as.graphNEL")
 export("KGMLtoIgraph")
