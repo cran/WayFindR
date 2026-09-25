@@ -12,7 +12,7 @@
 
 <meta name="author" content="Polina Bombina and Kevin R. Coombes" />
 
-<meta name="date" content="2026-01-08" />
+<meta name="date" content="2026-09-25" />
 
 <title>WayFindR: Computing Graph Metrics on WikiPathways</title>
 
@@ -344,7 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">WayFindR: Computing Graph Metrics on WikiPathways</h1>
 <h4 class="author">Polina Bombina and Kevin R. Coombes</h4>
-<h4 class="date">2026-01-08</h4>
+<h4 class="date">2026-09-25</h4>
 
 
 <div id="TOC">
@@ -411,9 +411,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb4-15"><a href="#cb4-15"></a>                   <span class="dt">meanDistance =</span> <span class="kw">mean_distance</span>(G),</span>
 <span id="cb4-16"><a href="#cb4-16"></a>                   <span class="dt">cliques =</span> <span class="kw">clique_num</span>(G),</span>
 <span id="cb4-17"><a href="#cb4-17"></a>                   <span class="dt">reciprocity =</span> <span class="kw">reciprocity</span>(G))</span></code></pre></div>
-<pre><code>## Warning in clique_num(G): At
-## vendor/cigraph/src/cliques/maximal_cliques_template.h:221 : Edge directions are
-## ignored for maximal clique calculations.</code></pre>
+<pre><code>## Warning in clique_number_impl(graph = graph): Edge directions are ignored for maximal clique calculations.
+## Source: cliques/maximal_cliques_template.h:221</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>metrics</span></code></pre></div>
 <pre><code>##   nVertices nEdges nNegative hasLoop hasMultiple hasEuler nComponents
 ## 1        55     61        14   FALSE       FALSE    FALSE           1
@@ -462,7 +461,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>A &lt;-<span class="st"> </span><span class="kw">adjacent_vertices</span>(G, w, <span class="st">&quot;in&quot;</span>)</span>
 <span id="cb19-2"><a href="#cb19-2"></a>A</span></code></pre></div>
 <pre><code>## $b3356
-## + 9/55 vertices, named, from 6b15ce6:
+## + 9/55 vertices, named, from c1787ca:
 ## [1] b2305 b62b2 bb118 c7b3c ca5fb f8fb6 fad48 fb887 c2a5c</code></pre>
 <p>By default, we only see the cryptic alphanumeric identifiers. By extracting the IDs, we can find the gene names.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>ids &lt;-<span class="st"> </span><span class="kw">as_ids</span>(A[[<span class="dv">1</span>]])</span>
